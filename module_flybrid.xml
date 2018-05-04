@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_flybrid" default="compile.module.flybrid">
+  <dirname property="module.flybrid.basedir" file="${ant.file.module_flybrid}"/>
+  
+  <property name="module.jdk.home.flybrid" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.flybrid" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.flybrid" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.flybrid" value="-encoding UTF-8 -source 9 -target 9 ${compiler.args}"/>
+  
+  <property name="flybrid.output.dir" value="${module.flybrid.basedir}/out/production/Flybrid"/>
+  <property name="flybrid.testoutput.dir" value="${module.flybrid.basedir}/out/test/Flybrid"/>
+  
+  <path id="flybrid.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="flybrid.module.production.classpath">
+    <path refid="${module.jdk.classpath.flybrid}"/>
+    <path refid="library.jdk-10.classpath"/>
+  </path>
+  
+  <path id="flybrid.runtime.production.module.classpath">
+    <pathelement location="${flybrid.output.dir}"/>
+    <path refid="library.jdk-10.classpath"/>
+  </path>
+  
+  <path id="flybrid.module.classpath">
+    <path refid="${module.jdk.classpath.flybrid}"/>
+    <pathelement location="${flybrid.output.dir}"/>
+    <path refid="library.jdk-10.classpath"/>
+  </path>
+  
+  <path id="flybrid.runtime.module.classpath">
+    <pathelement location="${flybrid.testoutput.dir}"/>
+    <pathelement location="${flybrid.output.dir}"/>
+    <path refid="library.jdk-10.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.flybrid">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.flybrid">
+    <patternset refid="excluded.from.module.flybrid"/>
+  </patternset>
+  
+  <path id="flybrid.module.sourcepath">
+    <dirset dir="${module.flybrid.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.flybrid" depends="compile.module.flybrid.production,compile.module.flybrid.tests" description="Compile module Flybrid"/>
+  
+  <target name="compile.module.flybrid.production" depends="register.custom.compilers" description="Compile module Flybrid; production classes">
+    <mkdir dir="${flybrid.output.dir}"/>
+    <javac2 destdir="${flybrid.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.flybrid}/javac">
+      <compilerarg line="${compiler.args.flybrid}"/>
+      <bootclasspath refid="flybrid.module.bootclasspath"/>
+      <classpath refid="flybrid.module.production.classpath"/>
+      <src refid="flybrid.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.flybrid"/>
+    </javac2>
+    
+    <copy todir="${flybrid.output.dir}">
+      <fileset dir="${module.flybrid.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.flybrid.tests" depends="register.custom.compilers,compile.module.flybrid.production" description="compile module Flybrid; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.flybrid" description="cleanup module">
+    <delete dir="${flybrid.output.dir}"/>
+    <delete dir="${flybrid.testoutput.dir}"/>
+  </target>
+</project>
